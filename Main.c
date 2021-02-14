@@ -14,7 +14,7 @@ int find_free_block(unsigned char *Heap, size_t alloc_size) {
 
 	// While not passed end and already allocated and too small
 	while((p < end) && ((*p & 1) || (*p <= alloc_size)))
-		p += ((*p & -2) >> 1); // Go to the next block
+		p += (*p >> 1); // Go to the next block
 
 	// If a block of requested size is not available.
 	if ((*p & 1)) return -1;
@@ -31,7 +31,7 @@ int add_block(unsigned char *Heap, size_t payload_size) {
 	int prev_index_header = find_free_block(Heap, alloc_size);
 	if (prev_index_header == -1) return -1;
 
-	int prev_index_footer = prev_index_header + ((Heap[prev_index_header] & -2) >> 1) - 1;
+	int prev_index_footer = prev_index_header + (Heap[prev_index_header] >> 1) - 1;
 	int cur_index_header = prev_index_header; // Same index
 	int cur_index_footer = cur_index_header + alloc_size - 1;
 
