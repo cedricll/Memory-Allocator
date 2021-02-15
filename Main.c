@@ -1,5 +1,6 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 // Assuming that heap is 127 bytes long and memory is byte-addressable
 size_t HEAP_SIZE = 127;
@@ -46,6 +47,51 @@ int add_block(unsigned char *Heap, size_t payload_size) {
 	return cur_index_header+1;
 }
 
+void blocklist(unsigned char * Heap) {
+	// print out blocks in order: pointer to start, payload size, allocation status
+
+	unsigned char *start = &Heap[0]; // Header address of the first block
+	unsigned char *end = &Heap[HEAP_SIZE-1]; // Footer address of the last block
+
+	// while start < end, then print out the blocks
+	while (start < end) {
+		// print each block information:
+		// pointer to start, payload size, allocation status
+		// start,           *start & -2,   *start & 1
+
+		if (*start & 1 == 1) { // if allocated
+			printf("%d, %d, allocated.", start, *start & -2);
+		}
+		else { // if free
+			printf("%d, %d, free.", start, *start & -2);
+		}
+		
+		start += (*start >> 1); // goes to next block
+	}
+
+}
+
+void writemem(int index, char * str, unsigned char * Heap) {
+	unsigned char *target = &Heap[index];
+	int size_of_str = strlen(str);
+	*target = size_of_str; // this will be the header to hold the size
+	*target = *target | 1; // mark allocation status as 1 by doing OR operation between current heap index and 1
+	target++; // go to next address
+	int i;
+	for (i = 0; i < size_of_str; i++) {
+		*target = str[i];
+
+		target++; // this goes to the next address?
+	}
+	
+	*target = size_of_str; // this will be the footer to hold the size
+	*target = *target | 1; // mark allocation status as 1 by doing OR operation between current heap index and 1
+	
+}
+
+void printmem(int index, int num_chars_to_print, unsigned char * Heap) {
+
+}
 
 int main() {
 	// The heap is organized as an implicit free list. The heap is initially completely unallocated,
@@ -58,6 +104,8 @@ int main() {
 	Heap[HEAP_SIZE-1] = HEAP_SIZE << 1;
 	
 	free(Heap);
+
+	printf("Testing this A4");
 
 	return 0;
 }
