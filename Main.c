@@ -74,23 +74,32 @@ void blocklist(unsigned char * Heap) {
 void writemem(int index, char * str, unsigned char * Heap) {
 	unsigned char *target = &Heap[index];
 	int size_of_str = strlen(str);
-	*target = size_of_str; // this will be the header to hold the size
-	*target = *target | 1; // mark allocation status as 1 by doing OR operation between current heap index and 1
-	target++; // go to next address
+	// *target = size_of_str; // this will be the header to hold the size
+	// *target = *target | 1; // mark allocation status as 1 by doing OR operation between current heap index and 1
+	// target++; // go to next address
 	int i;
 	for (i = 0; i < size_of_str; i++) {
-		*target = str[i];
+		*target = str[i]; // char is written into address
 
-		target++; // this goes to the next address?
+		// "if a block is freed, you must ensure that whatever was written to the block is reset back to 0." confused on this
+		if (*target & 1 == 0) { // if block is free
+			// something is written to the block is reset back to zero?
+			// my interpretation:
+			*target = 0;
+		}
+
+		target += (*target >> 1); // this goes to the next address?
 	}
-	
-	*target = size_of_str; // this will be the footer to hold the size
-	*target = *target | 1; // mark allocation status as 1 by doing OR operation between current heap index and 1
 	
 }
 
 void printmem(int index, int num_chars_to_print, unsigned char * Heap) {
-
+	unsigned char *target = &Heap[index];
+	int i;
+	for (i = 0; i < num_chars_to_print; i++) {
+		printf("%d ", *target); 
+		target += (*target >> 1); // this goes to the next address?
+	}
 }
 
 int main() {
